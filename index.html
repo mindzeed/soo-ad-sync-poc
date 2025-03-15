@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Azure AD Integration</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+
+
+
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&display=swap');
+
+    body {
+        font-family: "Heebo", sans-serif;
+             background-color: #f1f4f1;
+      color: #333333;
+      font-size: 14px;
+    }
+    a.text-info {
+    color: #13b3ad !important;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+a.text-info:hover {
+    color: #13b3ad !important;
+    text-decoration: none !important;
+}
+
+.form-switch .form-check-input:checked {
+    background-color: #13b3ad !important;
+    border-color: #13b3ad !important;
+}
+
+
+
+    
+    .content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    
+    .nav-underline {
+      border-bottom: 2px solid #15C9C3;
+      margin-bottom: 1rem;
+    }
+    
+    .nav-underline .nav-link {
+        font-size: 14px;
+      color: #A5A8A5;
+      padding-bottom: 0.5rem;
+      padding-left: 0;
+      padding-right: 25px;
+      border-bottom: 3px solid transparent;
+    }
+    
+    .nav-underline .nav-link.active {
+      color: #333333;
+    }
+    
+    .config-section {
+
+      padding-top: 40px;
+      margin-bottom: 2rem;
+
+    }
+    
+    .form-switch .form-check-input {
+      width: 3em;
+      height: 1.5em;
+    }
+    .btn-outline-secondary {
+      background-color: #ffffff;
+      color: #333333;
+      border: 1px solid #D2D3D2;
+      font-size: 14px;
+      padding-top: 8px;
+      padding-left: 15px;
+      padding-right: 15px;
+      padding-bottom: 8px;  
+    }
+    .btn-outline-secondary:hover {
+      background-color: #333333;
+    }
+    
+    .form-switch .form-check-input:checked {
+      background-color: #0dcaf0;
+      border-color: #0dcaf0;
+    }
+    
+    .btn-primary {
+      background-color: #0dcaf0;
+      border-color: #0dcaf0;
+    }
+    
+    .btn-primary:hover {
+      background-color: #0bacce;
+      border-color: #0bacce;
+    }
+    
+    .btn-outline-primary {
+      color: #0dcaf0;
+      border-color: #0dcaf0;
+    }
+    
+    .btn-outline-primary:hover {
+      background-color: #0dcaf0;
+      color: white;
+    }
+    
+    table {
+      margin-top: 1rem;
+    }
+    
+    .section-title {
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid #dee2e6;
+    }
+    
+    .footer-buttons {
+      margin-top: 2rem;
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+    }
+    
+    .field-description {
+      font-size: 0.875rem;
+      color: #6c757d;
+      margin-top: 0.25rem;
+    }
+
+    h5 {
+      font-size: 14px;
+      font-weight: 400;
+    }
+
+    .mz-help-text {
+      font-size: 12px;
+      color: #A5A8A5 !important;
+      margin-top: 2px;
+    }
+    hr.my-4 {
+      border-top: 1px solid ##A5A8A5;
+    }
+
+    .form-control {
+      font-size: 14px;
+      padding-top: 8px;
+      padding-left: 15px;
+      background-color: #ffffff;
+      border-color: ##D2D3D2;
+      color: #333333;
+    }
+
+    .readonly-input {
+        background-color: #f1f4f1;
+    }
+
+
+
+input::placeholder {
+    opacity: 0.5 !important; /* Gør teksten fuldt synlig */
+
+}
+
+.new-attribute-btn {
+    margin-top: 50px !important;
+}
+.text-success {
+    cursor: pointer;
+    color: #13b3ad !important;
+}
+small.text-secondary {
+    color: #f05f5a !important;
+}
+
+.btn-info {
+    background-color: #13b3ad !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    border-radius: 6px !important;
+    border: none !important;
+}
+.btn-info:hover {
+    background-color: #333333 !important;
+    color: #ffffff !important;
+}
+
+h6 {
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 0px !important;
+}
+
+
+    
+  </style>
+</head>
+<body>
+  <div class="content">
+    <ul class="nav nav-underline mb-4">
+      <li class="nav-item">
+        <a class="nav-link" href="#general">General</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#notifications">Notifications</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#webhook">Webhook</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="#sso">Single sign-on</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#adsync">AD-sync</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#attribute-mapping">Attribute Mapping</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#logs">Logs</a>
+      </li>
+    </ul>
+    
+    <!-- Single Sign-On Section -->
+    <section id="sso" class="config-section">
+      
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <h5 class="mb-0">Enable Single Sign-On</h5>
+          <p class="text-muted mb-0 mz-help-text" >Allow users to access Mindzeed via single sign on</p>
+        </div>
+        <div class="col-md-4 text-end">
+          <div class="form-check form-switch d-inline-block">
+            <input class="form-check-input" type="checkbox" id="enableSSO" style="width: 3em; height: 1.5em;">
+          </div>
+        </div>
+      </div>
+      
+      <hr class="my-4">
+      
+      <!-- Container for all content that should be conditionally shown -->
+      <div id="ssoContent" style="display: none;">
+      
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <h5 class="mb-0">Metadata</h5>
+          <p class="text-muted mb-0 mz-help-text">Download the required metadata for your identity provider.</p>
+        </div>
+        <div class="col-md-4 text-end">
+          <button type="button" class="btn btn-outline-secondary px-4">Download</button>
+        </div>
+      </div>
+      
+      <hr class="my-4">
+      
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <h5 class="mb-0">Identity Provider Sign-in URL</h5>
+          <p class="text-muted mb-0 mz-help-text" >Enter the URL where users will be redirected to authenticate with your identity provider.</p>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="signInUrl" placeholder="https://login.microsoftonline.com/...">
+        </div>
+      </div>
+      <hr class="my-4">
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <h5 class="mb-0">Identity Provider Sign-out URL (optional)</h5>
+          <p class="text-muted mb-0 mz-help-text" >Enter the URL where users will be redirected after signing out.</p>
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" id="signOutUrl" placeholder="https://login.microsoftonline.com/...">
+        </div>
+      </div>
+      
+      <hr class="my-4">
+      
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <h5 class="mb-0">Certificate</h5>
+          <p class="text-muted mb-0 mz-help-text" >Upload an X.509 certificate to verify the SAML signature.</p>
+        </div>
+        <div class="col-md-4 text-end">
+          <button class="btn btn-outline-secondary px-4" type="button">Upload certificate</button>
+        </div>
+      </div>
+      
+      <hr class="my-4">
+      
+      <div class="row mb-4">
+        <div class="col-12">
+          <p class="mb-0">When you have saved your settings, you can test the setup. Users can sign in using this link: <a href="#" class="text-info">https://app.mindzeed.com/signin?org_code=XXXXXXXX</a></p>
+        </div>
+      </div>
+      
+      <div class="row">
+        <div class="col-12">
+          <button type="button" class="btn btn-outline-secondary px-4">Save</button>
+        </div>
+      </div>
+      </div>
+    </section>
+    
+    <!-- AD-sync Section -->
+    <section id="adsync" class="config-section">
+      
+      <div class="row mb-4">
+        <div class="col-md-8">
+          <h5 class="mb-0">Enable AD Synchronization</h5>
+          <p class="text-muted mb-0 mz-help-text" >Microsoft Graph User Sync</p>
+        </div>
+        <div class="col-md-4 text-end">
+          <div class="form-check form-switch d-inline-block">
+            <input class="form-check-input" type="checkbox" id="enableADSync" style="width: 3em; height: 1.5em;">
+          </div>
+        </div>
+      </div>
+      
+      <hr class="my-4">
+      
+      <!-- Container for all content that should be conditionally shown -->
+      <div id="adSyncContent" style="display: none;">
+      
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <h5 class="mb-0">Object ID</h5>
+          <p class="text-muted mb-0 mz-help-text" >The unique identifier for your application</p>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="objectId" placeholder="e.g., a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6">
+        </div>
+      </div>
+      
+      <hr class="my-4">
+      
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <h5 class="mb-0">Tenant ID</h5>
+          <p class="text-muted mb-0 mz-help-text" >Your organization's unique identifier</p>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="tenantId" placeholder="e.g., a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6">
+        </div>
+      </div>
+      
+      <hr class="my-4">
+      
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <h5 class="mb-0">Client ID</h5>
+          <p class="text-muted mb-0 mz-help-text" >The application ID</p>
+        </div>
+        <div class="col-md-6">
+          <input type="text" class="form-control" id="clientId" placeholder="e.g., a1b2c3d4-e5f6-g7h8-i9j0-k1l2m3n4o5p6">
+        </div>
+      </div>
+      
+      <hr class="my-4">
+      
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <h5 class="mb-0">Client Secret (value)</h5>
+          <p class="text-muted mb-0 mz-help-text" >The secret key generated for your application</p>
+        </div>
+        <div class="col-md-6">
+          <input type="password" class="form-control" id="clientSecret">
+        </div>
+      </div>
+      <hr class="my-4">
+
+      <div class="row">
+        <div class="col-12">
+          <div class="d-flex justify-content-between">
+            <button type="button" class="btn btn-outline-secondary px-4">Save</button>
+            <div class="d-flex align-items-center">
+              <span class="me-3">Save and verify your connection</span>
+              <button type="button" class="btn btn-info text-white" style="background-color: #0dcaf0;">Test Connection</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+    
+    <!-- Attribute Mapping Section -->
+    <section id="attribute-mapping" class="config-section">
+ 
+      
+      <div class="row mb-4">
+        <div class="col-4">
+          <h6>Mindzeed System Field</h6>
+        </div>
+        <div class="col-1 text-center">
+        </div>
+        <div class="col-4">
+          <h6>AD Attribute</h6>
+        </div>
+      </div>
+      <hr class="my-4">
+
+      <!-- firstName to givenName -->
+      <div class="row mb-3 align-items-center">
+        <div class="col-4">
+          <input type="text" class="form-control readonly-input" value="firstName" readonly>
+        </div>
+        <div class="col-1 text-center">
+          <i class="fa fa-angle-right" style="color: #00AAA4; font-size: 1.5rem;"></i>
+        </div>
+        <div class="col-4">
+          <div class="dropdown">
+            <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" id="givenNameDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <span>givenName</span>
+              <i class="fas fa-chevron-down text-secondary"></i>
+            </button>
+            <ul class="dropdown-menu w-100" aria-labelledby="givenNameDropdown"></ul>
+          </div>
+        </div>
+        <div class="col-3">
+          <small class="text-secondary">Required field</small>
+        </div>
+      </div>
+      <hr class="my-4">
+
+      <!-- lastName to surname -->
+      <div class="row mb-3 align-items-center">
+        <div class="col-4">
+          <input type="text" class="form-control readonly-input" value="lastName" readonly>
+        </div>
+        <div class="col-1 text-center">
+          <i class="fa fa-angle-right" style="color: #00AAA4; font-size: 1.5rem;"></i>
+        </div>
+        <div class="col-4">
+          <div class="dropdown">
+            <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" id="surnameDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <span>surname</span>
+              <i class="fas fa-chevron-down text-secondary"></i>
+            </button>
+            <ul class="dropdown-menu w-100" aria-labelledby="surnameDropdown"></ul>
+          </div>
+        </div>
+        <div class="col-3">
+          <small class="text-secondary">Required field</small>
+        </div>
+      </div>
+      <hr class="my-4">
+
+      <!-- email to mail -->
+      <div class="row mb-3 align-items-center">
+        <div class="col-4">
+          <input type="text" class="form-control readonly-input" value="email" readonly>
+        </div>
+        <div class="col-1 text-center">
+          <i class="fa fa-angle-right" style="color: #00AAA4; font-size: 1.5rem;"></i>
+        </div>
+        <div class="col-4">
+          <div class="dropdown">
+            <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" id="mailDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <span>mail</span>
+              <i class="fas fa-chevron-down text-secondary"></i>
+            </button>
+            <ul class="dropdown-menu w-100" aria-labelledby="mailDropdown"></ul>
+          </div>
+        </div>
+        <div class="col-3">
+          <small class="text-secondary">Required field</small>
+        </div>
+      </div>
+      <hr class="my-4">
+
+      <!-- AD Attribute to department -->
+      <div class="row mb-3 align-items-center">
+        <div class="col-4">
+          <div class="dropdown">
+            <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" id="attrTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <span>AD Attribute</span>
+              <i class="fas fa-chevron-down text-secondary"></i>
+            </button>
+            <ul class="dropdown-menu w-100" aria-labelledby="attrTypeDropdown">
+              <li><a class="dropdown-item" href="#">AD Attribute</a></li>
+              <li><a class="dropdown-item" href="#">AD Group</a></li>
+              <li><a class="dropdown-item" href="#">Custom Attribute</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-1 text-center">
+          <i class="fa fa-angle-right" style="color: #00AAA4; font-size: 1.5rem;"></i>
+        </div>
+        <div class="col-4">
+          <div class="dropdown">
+            <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" id="departmentDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <span>department</span>
+              <i class="fas fa-chevron-down text-secondary"></i>
+            </button>
+            <ul class="dropdown-menu w-100" aria-labelledby="departmentDropdown">
+              <li><a class="dropdown-item" href="#">department</a></li>
+              <li><a class="dropdown-item" href="#">companyName</a></li>
+              <li><a class="dropdown-item" href="#">jobTitle</a></li>
+              <li><a class="dropdown-item" href="#">physicalDeliveryOfficeName</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-3">
+          <small class="text-secondary">Required field</small>
+        </div>
+      </div>
+
+      <!-- AD Group to Marketing Team -->
+      <div class="row mb-3 align-items-center">
+        <div class="col-4">
+          <div class="dropdown">
+            <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" id="groupTypeDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <span>AD Group</span>
+              <i class="fas fa-chevron-down text-secondary"></i>
+            </button>
+            <ul class="dropdown-menu w-100" aria-labelledby="groupTypeDropdown">
+              <li><a class="dropdown-item" href="#">AD Group</a></li>
+              <li><a class="dropdown-item" href="#">AD Attribute</a></li>
+              <li><a class="dropdown-item" href="#">Custom Attribute</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-1 text-center">
+          <i class="fa fa-angle-right" style="color: #00AAA4; font-size: 1.5rem;"></i>
+        </div>
+        <div class="col-4">
+          <div class="dropdown">
+            <button class="form-control text-start d-flex justify-content-between align-items-center" type="button" id="marketingTeamDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              <span>Marketing Team</span>
+              <i class="fas fa-chevron-down text-secondary"></i>
+            </button>
+            <ul class="dropdown-menu w-100" aria-labelledby="marketingTeamDropdown">
+              <li><a class="dropdown-item" href="#">Marketing Team</a></li>
+              <li><a class="dropdown-item" href="#">Sales Team</a></li>
+              <li><a class="dropdown-item" href="#">IT Department</a></li>
+              <li><a class="dropdown-item" href="#">Executives</a></li>
+              <li><a class="dropdown-item" href="#">HR Team</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-3">
+          <small class="text-success" style="cursor: pointer;">Remove</small>
+        </div>
+      </div>
+      
+      <div class="mb-4 mt-4 new-attribute-btn">
+        <button type="button" class="btn btn-info text-white" style="background-color: #0dcaf0;" id="newAttributeBtn">
+          New Attribute
+        </button>
+      </div>
+      
+      <hr class="my-4">
+      
+      <div class="d-flex justify-content-between align-items-center">
+        <button type="button" class="btn btn-outline-secondary">Save</button>
+        <div class="d-flex gap-3">
+          <span class="align-self-center">Save and sync users</span>
+          <button type="button" class="btn btn-info text-white" style="background-color: #0dcaf0;">
+            Start User Synchronization
+          </button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Simpel JavaScript til at håndtere tab-navigation
+    document.addEventListener('DOMContentLoaded', function() {
+      const navLinks = document.querySelectorAll('.nav-underline .nav-link');
+      const sections = document.querySelectorAll('section');
+      
+      // Vis kun den aktive sektion ved indlæsning (Attribute Mapping)
+      sections.forEach(section => {
+        if (section.id !== 'sso') {
+          section.style.display = 'none';
+        }
+      });
+      
+      // Funktion til at vise/skjule Single Sign-On indhold baseret på toggle-switch
+      function toggleSSOContent() {
+        const ssoToggle = document.getElementById('enableSSO');
+        const ssoContent = document.getElementById('ssoContent');
+        
+        if (ssoToggle && ssoContent) {
+          ssoContent.style.display = ssoToggle.checked ? 'block' : 'none';
+        }
+      }
+      
+      // Tilføj event listener til SSO toggle-switch
+      const ssoToggle = document.getElementById('enableSSO');
+      if (ssoToggle) {
+        ssoToggle.addEventListener('change', toggleSSOContent);
+        // Kald funktionen ved indlæsning for at sætte korrekt tilstand
+        toggleSSOContent();
+      }
+      
+      // Funktion til at vise/skjule AD-sync indhold baseret på toggle-switch
+      function toggleADSyncContent() {
+        const adSyncToggle = document.getElementById('enableADSync');
+        const adSyncContent = document.getElementById('adSyncContent');
+        
+        if (adSyncToggle && adSyncContent) {
+          adSyncContent.style.display = adSyncToggle.checked ? 'block' : 'none';
+        }
+      }
+      
+      // Tilføj event listener til AD-sync toggle-switch
+      const adSyncToggle = document.getElementById('enableADSync');
+      if (adSyncToggle) {
+        adSyncToggle.addEventListener('change', toggleADSyncContent);
+        // Kald funktionen ved indlæsning for at sætte korrekt tilstand
+        toggleADSyncContent();
+      }
+      
+      navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Fjern active class fra alle links
+          navLinks.forEach(l => l.classList.remove('active'));
+          
+          // Tilføj active class til det klikkede link
+          this.classList.add('active');
+          
+          // Skjul alle sektioner
+          sections.forEach(section => {
+            section.style.display = 'none';
+          });
+          
+          // Vis den valgte sektion
+          const targetId = this.getAttribute('href').substring(1);
+          document.getElementById(targetId).style.display = 'block';
+        });
+      });
+      
+      // Attribut og gruppeoptioner
+      const attributeOptions = [
+        'department', 'companyName', 'jobTitle', 'physicalDeliveryOfficeName', 
+        'userPrincipalName', 'mail', 'givenName', 'surname', 'displayName', 'employeeID'
+      ];
+      
+      const groupOptions = [
+        'Marketing Team', 'Sales Team', 'IT Department', 'Executives', 'HR Team', 
+        'Customer Support', 'Finance Department', 'Research Team'
+      ];
+      
+      // Fyld de øverste dropdown-menuer med attributter
+      const fillAttributeDropdowns = () => {
+        // De tre øverste dropdowns (firstName, lastName, email)
+        const topDropdowns = [
+          document.getElementById('givenNameDropdown'),
+          document.getElementById('surnameDropdown'),
+          document.getElementById('mailDropdown')
+        ];
+        
+        // For hver dropdown
+        topDropdowns.forEach((dropdown, index) => {
+          // Find menuen
+          const dropdownMenu = dropdown.nextElementSibling;
+          
+          // Ryd nuværende indhold
+          dropdownMenu.innerHTML = '';
+          
+          // Tilføj alle attributoptioner
+          attributeOptions.forEach(option => {
+            const li = document.createElement('li');
+            const a = document.createElement('a');
+            a.classList.add('dropdown-item');
+            a.href = '#';
+            a.textContent = option;
+            a.addEventListener('click', function(e) {
+              e.preventDefault();
+              const btnText = dropdown.querySelector('span');
+              if (btnText) {
+                btnText.textContent = this.textContent;
+              }
+            });
+            li.appendChild(a);
+            dropdownMenu.appendChild(li);
+          });
+        });
+      };
+      
+      // Fyld dropdown-menuerne med attributter ved indlæsning
+      fillAttributeDropdowns();
+      
+      // Funktion til at tilføje event listeners til dropdown items
+      const addDropdownItemListeners = (items) => {
+        items.forEach(item => {
+          item.addEventListener('click', handleDropdownItemClick);
+        });
+      };
+      
+      // Håndter dropdown-valg i Attribute Mapping sektionen
+      function handleDropdownItemClick(e) {
+        e.preventDefault();
+        
+        // Find parent dropdown-toggle button
+        const dropdownToggle = this.closest('.dropdown').querySelector('button');
+        
+        // Find span element inden i knappen og opdater teksten
+        const btnTextElement = dropdownToggle.querySelector('span');
+        if (btnTextElement) {
+          btnTextElement.textContent = this.textContent;
+          
+          // Tjek om dette er et typevalg (AD Attribute, AD Group eller Custom Attribute)
+          // og opdater den højre dropdown hvis nødvendigt
+          if (this.textContent === 'AD Attribute' || this.textContent === 'AD Group' || this.textContent === 'Custom Attribute') {
+            // Find nærmeste row og så højre dropdown/input container
+            const row = dropdownToggle.closest('.row');
+            // Find den anden col-4 (højre side, ikke venstre side)
+            const allCols = row.querySelectorAll('.col-4');
+            const rightCol = allCols.length > 1 ? allCols[1] : null;
+            
+            // Gem reference til required text
+            const removeCol = row.querySelector('.col-3');
+            const smallText = removeCol ? removeCol.querySelector('small') : null;
+            
+            // Håndter custom attribute
+            if (this.textContent === 'Custom Attribute') {
+              // Fjern dropdown og opret et tekstfelt
+              rightCol.innerHTML = '';
+              
+              // Opret input felt
+              const inputGroup = document.createElement('div');
+              const input = document.createElement('input');
+              input.type = 'text';
+              input.className = 'form-control';
+              input.placeholder = 'Enter custom attribute name';
+              
+              // Tilføj input til container
+              inputGroup.appendChild(input);
+              rightCol.appendChild(inputGroup);
+            } else {
+              // For AD Attribute og AD Group
+              // Nulstil til dropdown hvis det ikke allerede er en dropdown
+              if (!rightCol.querySelector('.dropdown')) {
+                rightCol.innerHTML = '';
+                
+                const dropdownContainer = document.createElement('div');
+                dropdownContainer.className = 'dropdown';
+                
+                const button = document.createElement('button');
+                button.className = 'form-control text-start d-flex justify-content-between align-items-center';
+                button.type = 'button';
+                button.setAttribute('data-bs-toggle', 'dropdown');
+                button.setAttribute('aria-expanded', 'false');
+                
+                const span = document.createElement('span');
+                
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-chevron-down text-secondary';
+                
+                button.appendChild(span);
+                button.appendChild(icon);
+                
+                const dropdownMenu = document.createElement('ul');
+                dropdownMenu.className = 'dropdown-menu w-100';
+                
+                dropdownContainer.appendChild(button);
+                dropdownContainer.appendChild(dropdownMenu);
+                rightCol.appendChild(dropdownContainer);
+              }
+              
+              // Find dropdown
+              const rightDropdown = rightCol.querySelector('.dropdown');
+              const rightButton = rightDropdown.querySelector('button');
+              const rightMenu = rightDropdown.querySelector('.dropdown-menu');
+              
+              // Ryd nuværende menu
+              rightMenu.innerHTML = '';
+              
+              // Vælg de rigtige optioner baseret på valg
+              const options = this.textContent === 'AD Attribute' ? attributeOptions : groupOptions;
+              
+              // Opret nye menupunkter
+              options.forEach(option => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.classList.add('dropdown-item');
+                a.href = '#';
+                a.textContent = option;
+                a.addEventListener('click', handleDropdownItemClick);
+                li.appendChild(a);
+                rightMenu.appendChild(li);
+              });
+              
+              // Opdater knaptekst til første option
+              const btnText = rightButton.querySelector('span');
+              if (btnText) {
+                btnText.textContent = 'Select an attribute...';
+                btnText.style.color = '#6c757d'; // Gør teksten grå som en placeholder
+              }
+            }
+          }
+        }
+      }
+      
+      const dropdownItems = document.querySelectorAll('#attribute-mapping .dropdown-item');
+      addDropdownItemListeners(dropdownItems);
+      
+      // Håndter klik på New Attribute knappen
+      document.getElementById('newAttributeBtn').addEventListener('click', function() {
+        // Find container til at tilføje den nye række
+        const container = document.querySelector('#attribute-mapping');
+        const lastRow = container.querySelector('.row.mb-3:last-of-type');
+        const newAttributeButton = document.querySelector('#newAttributeBtn').closest('div');
+        
+        // Opret ny række
+        const newRow = document.createElement('div');
+        newRow.className = 'row mb-3 align-items-center new-attribute-row';
+        
+        // Venstre kolonne med dropdown
+        const leftCol = document.createElement('div');
+        leftCol.className = 'col-4'; // Ændret fra col-5 til col-4
+        
+        const leftDropdown = document.createElement('div');
+        leftDropdown.className = 'dropdown';
+        
+        const leftDropdownButton = document.createElement('button');
+        leftDropdownButton.className = 'form-control text-start d-flex justify-content-between align-items-center';
+        leftDropdownButton.type = 'button';
+        leftDropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+        leftDropdownButton.setAttribute('aria-expanded', 'false');
+        
+        const leftSpan = document.createElement('span');
+        leftSpan.textContent = 'AD Attribute';
+        
+        const leftIcon = document.createElement('i');
+        leftIcon.className = 'fas fa-chevron-down text-secondary';
+        
+        leftDropdownButton.appendChild(leftSpan);
+        leftDropdownButton.appendChild(leftIcon);
+        
+        const leftDropdownMenu = document.createElement('ul');
+        leftDropdownMenu.className = 'dropdown-menu w-100';
+        
+        // Tilføj valgmuligheder til venstre dropdown
+        const leftOptions = ['AD Attribute', 'AD Group', 'Custom Attribute'];
+        leftOptions.forEach(option => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.classList.add('dropdown-item');
+          a.href = '#';
+          a.textContent = option;
+          a.addEventListener('click', handleDropdownItemClick);
+          li.appendChild(a);
+          leftDropdownMenu.appendChild(li);
+        });
+        
+        leftDropdown.appendChild(leftDropdownButton);
+        leftDropdown.appendChild(leftDropdownMenu);
+        leftCol.appendChild(leftDropdown);
+        
+        // Midterste kolonne med pil
+        const middleCol = document.createElement('div');
+        middleCol.className = 'col-1 text-center';
+        
+        const arrow = document.createElement('i');
+        arrow.className = 'fa fa-angle-right';
+        arrow.style.color = '#00AAA4';
+        arrow.style.fontSize = '1.5rem';
+        
+        middleCol.appendChild(arrow);
+        
+        // Højre kolonne med dropdown (tom/ikke valgt)
+        const rightCol = document.createElement('div');
+        rightCol.className = 'col-4'; // Ændret fra col-5 til col-4
+        
+        const rightDropdown = document.createElement('div');
+        rightDropdown.className = 'dropdown';
+        
+        const rightDropdownButton = document.createElement('button');
+        rightDropdownButton.className = 'form-control text-start d-flex justify-content-between align-items-center';
+        rightDropdownButton.type = 'button';
+        rightDropdownButton.setAttribute('data-bs-toggle', 'dropdown');
+        rightDropdownButton.setAttribute('aria-expanded', 'false');
+        
+        const rightSpan = document.createElement('span');
+        rightSpan.textContent = 'Select an attribute...'; // Placeholder tekst
+        rightSpan.style.color = '#6c757d'; // Gør teksten grå som en placeholder
+        
+        const rightIcon = document.createElement('i');
+        rightIcon.className = 'fas fa-chevron-down text-secondary';
+        
+        rightDropdownButton.appendChild(rightSpan);
+        rightDropdownButton.appendChild(rightIcon);
+        
+        const rightDropdownMenu = document.createElement('ul');
+        rightDropdownMenu.className = 'dropdown-menu w-100';
+        
+        // Tilføj attribut-valgmuligheder til højre dropdown
+        attributeOptions.forEach(option => {
+          const li = document.createElement('li');
+          const a = document.createElement('a');
+          a.classList.add('dropdown-item');
+          a.href = '#';
+          a.textContent = option;
+          a.addEventListener('click', function(e) {
+            e.preventDefault();
+            rightSpan.textContent = this.textContent;
+            rightSpan.style.color = '#212529'; // Nulstil til normal tekstfarve når der er valgt noget
+          });
+          li.appendChild(a);
+          rightDropdownMenu.appendChild(li);
+        });
+        
+        rightDropdown.appendChild(rightDropdownButton);
+        rightDropdown.appendChild(rightDropdownMenu);
+        rightCol.appendChild(rightDropdown);
+        
+        // Tilføj "Remove" kolonne til højre
+        const removeCol = document.createElement('div');
+        removeCol.className = 'col-3';
+        
+        const removeText = document.createElement('small');
+        removeText.className = 'text-success';
+        removeText.style.cursor = 'pointer';
+        removeText.textContent = 'Remove';
+        // Tilføj click event til Remove tekst
+        removeText.addEventListener('click', function() {
+          const row = this.closest('.row');
+          if (row) {
+            row.remove();
+          }
+        });
+        
+        removeCol.appendChild(removeText);
+        
+        // Tilføj kolonnerne til rækken
+        newRow.appendChild(leftCol);
+        newRow.appendChild(middleCol);
+        newRow.appendChild(rightCol);
+        newRow.appendChild(removeCol);
+        
+        // Indsæt den nye række før New Attribute knappen
+        container.insertBefore(newRow, newAttributeButton);
+      });
+
+      // Gør eksisterende "Remove" tekst klikbar
+      const removeLinks = document.querySelectorAll('.text-success');
+      removeLinks.forEach(link => {
+        link.style.cursor = 'pointer';
+        link.classList.add('remove-link');
+        link.addEventListener('click', function() {
+          const row = this.closest('.row');
+          if (row) {
+            row.remove();
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
